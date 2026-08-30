@@ -6,7 +6,7 @@ import { auth } from "../middlewares/auth.js";
 //inicializo el router Y LO EXPORTO para poder usarlo en app.js
 export const router = Router();
 
-router.use(logger);
+// router.use(logger);
 router.use(auth);
 // Paso 2: nota que es un get y entonces lo deriva al controler 
 //empiezo a generar las rutas
@@ -14,16 +14,6 @@ router.get('/', productsController.getProducts); // aca le paso el metodo de la 
 
 router.get('/:id', productsController.getProductsById);
 
-router.post('/', (req, res) => {
 
-    let newProducto = "nuevo producto";
+router.post('/', productsController.createProduct);
 
-    res.setHeader('Content-type', 'application/json');
-    res.status(200).json({ newProducto });
-});
-
-router.post('/', (req, res) => {
-
-    res.setHeader('Content-type', 'application/json');
-    res.status(200).json({});
-});

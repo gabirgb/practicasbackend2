@@ -6,7 +6,7 @@ import { config } from "../config/config.js";
 
 export const auth = (req, res, next) => {
 
-    if (req.query.user != "admin" || req.query.password != config.general.SECRET) {
+    if (req.query.user != config.general.USER_DUMMY || req.query.password != config.general.SECRET_DUMMY) {
         res.setHeader('Content-Type', 'application/json');
         return res.status(401).json({ error: `Credenciales inválidas` });
     }

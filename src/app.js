@@ -4,6 +4,7 @@ import { router as productsRouter } from './routes/productsRouter.js';
 import { config } from './config/config.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { logger } from './middlewares/log.js';
+import { connDB } from './config/db.js';
 
 
 const PORT = 3000;
@@ -46,3 +47,4 @@ const server = app.listen(PORT, () => {
     console.log(`Servidor escuchando en el puerto ${server.address().port}`);
 })
 
+connDB(config.database.MONGO_URI, config.database.DB_NAME)

@@ -8,5 +8,5 @@ import { ProductsController } from "./ProductsController.js";
 import { ProductsDAO } from "../dao/ProductsDAO.js";
 
 // Paso 7: Cuando instancio la clase ProductsController definí (al crearla en ProductsControler.js) que le tengo que pasar un DAO funcional. Entonces antes de instanciar la clase debo instanciar el DAO para poder pasarlo como arg.
-const productsDAO = new ProductsDAO();
+export const productsDAO = new ProductsDAO();
 export const productsController = new ProductsController(productsDAO);
