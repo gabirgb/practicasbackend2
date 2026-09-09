@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PRODUCT_STATUS, VALID_PRODUCT_STATUSES } from "../constants/productsConstants.js";
 
 const productsSchema = new mongoose.Schema(
     // el schema tiene 2 argumentos q se configuran como 2 obj:
@@ -56,8 +57,14 @@ const productsSchema = new mongoose.Schema(
             }
         },
         status: {
-            type: Boolean,
-            default: true,
+            type: String,
+            // enum restringe los valores permitidos únicamente a esta lista
+            enum: {
+                values: VALID_PRODUCT_STATUSES, // uso la constante centralizada
+                message: '{VALUE} no es un estado válido',
+            },
+            default: PRODUCT_STATUS.DRAFT, // Por defecto se crea en borrador
+            lowercase: true,  // Convierte automáticamente el string a minúsculas
         }
     },
     {

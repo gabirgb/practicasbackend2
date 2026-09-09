@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { register, login } from '../controllers/SessionsController.js';
+import { sessionsController } from '../controllers/index.js';
 export const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
+router.get('/current', sessionsController.getCurrentSession);
+router.post('/login', sessionsController.login);
+router.post('/logout', sessionsController.logout);

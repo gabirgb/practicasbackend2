@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { USER_ROLE, VALID_USER_ROLES } from '../constants/usersConstants.js';
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -25,13 +26,24 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'manager', 'admin'],
-        default: 'user', //siempre se auto-registra al usuario con el rol de menor privilegio, el rol de admin se le asigna manualmente a un usuario ya registrado para evitar filtraciones de seguridad
+        enum: {
+            values: VALID_USER_ROLES,
+            message: '{VALUE} no es un rol válido',
+        },
+        default: USER_ROLE.CUSTOMER,
+        lowercase: true,
     },
+    isActive: {
+        type: Boolean,
+        default: true
+    }
 },
     {
         timestamps: true
     }
 );
 
-export default mongoose.model('user', userSchema);
+export const usersModel = mongoose.model(
+    'user',
+    userSchema
+);

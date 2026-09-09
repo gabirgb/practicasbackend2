@@ -6,6 +6,7 @@ import { errorHandler } from './middlewares/errorHandler.js';
 import { logger } from './middlewares/log.js';
 import { connDB } from './config/db.js';
 import { router as sessionRouter } from './routes/sessionRouter.js';
+import { router as usersRouter } from './routes/usersRouter.js'
 
 const PORT = config.PORT;
 const app = express();
@@ -17,7 +18,9 @@ app.use('/api/sessions', sessionRouter); // Paso 1: la peticion entra a mi app.j
 // Paso 1: la peticion entra a mi app.js y detecta q estoy solicitando una ruta que empieza con '/api/products', entonces pasa al router de productsRouter.js 
 // escribo la ruta ('/api/products') desde donde quiero usar el router de productos, y a esa ruta se le concatena las rutas que definí en cada endpoint de productsRouter.js ("/", "/:id", etc)
 app.use('/api/products', productsRouter); // por ej quedaria '/api/products/:id' para el endpoint de get por id
+app.use('/api/users', usersRouter
 
+)
 //endpoint basico para la home
 // "/" -> path (del home)
 // get -> metodo

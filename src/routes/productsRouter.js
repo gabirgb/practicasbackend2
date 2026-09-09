@@ -9,7 +9,6 @@ export const router = Router();
 // Paso 2: nota que es un get y entonces lo deriva al controler 
 //empiezo a generar las rutas
 router.get('/', productsController.getProducts); // aca le paso el metodo de la clase que cree en productsController.js
-
-router.get('/:id', productsController.getProductsById);
+router.get('/:id', productsController.getProductById);
 
 router.post('/', productsController.createProduct);
