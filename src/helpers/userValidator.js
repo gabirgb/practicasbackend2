@@ -3,16 +3,16 @@ import { VALID_USER_ROLES } from "../constants/usersConstants.js";
 import { validateBirthDate } from "../helpers/dateValidationRules.js";
 
 export const validateCreateUserData = (userData = {}) => {
-    const { first_name, last_name, email, password, birth, role } = userData;
+    const { firstName, lastName, email, password, birth, role } = userData;
 
-    if (!first_name || typeof first_name !== 'string' || !first_name.trim()) {
+    if (!firstName || typeof firstName !== 'string' || !firstName.trim()) {
         return {
             isValid: false,
             error: 'El nombre es obligatorio y debe ser un texto válido'
         };
     }
 
-    if (!last_name || typeof last_name !== 'string' || !last_name.trim()) {
+    if (!lastName || typeof lastName !== 'string' || !lastName.trim()) {
         return {
             isValid: false,
             error: 'El apellido es obligatorio y debe ser un texto válido'
@@ -31,14 +31,6 @@ export const validateCreateUserData = (userData = {}) => {
             isValid: false,
             error: 'El password debe tener al menos 8 caracteres.'
         }
-    }
-
-    const birthValidation = validateBirthDate(birth);
-    if (!birthValidation.isValid) {
-        return {
-            isValid: false,
-            error: birthValidation.error
-        };
     }
 
 

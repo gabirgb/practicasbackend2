@@ -6,12 +6,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: true,
-        minlength: [3, 'El nombre debe tener al menos 2 caracteres'],
+        minlength: [3, 'El nombre debe tener al menos  3 caracteres'],
     },
     lastName: {
         type: String,
         trim: true,
-        minlength: [3, 'El apellido debe tener al menos 2 caracteres'],
+        minlength: [3, 'El apellido debe tener al menos 3 caracteres'],
     },
     email: {
         type: String,

@@ -7,6 +7,7 @@ import { logger } from './middlewares/log.js';
 import { connDB } from './config/db.js';
 import { router as sessionRouter } from './routes/sessionRouter.js';
 import { router as usersRouter } from './routes/usersRouter.js'
+import sessions from "express-session";
 
 const PORT = config.PORT;
 const app = express();
@@ -14,13 +15,20 @@ const app = express();
 //middlewares basicos para parsear la request del servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+//Inicializo el middleware de sesiones antes de definir las rutas:
+app.use(sessions({
+    secret: config.general.SECRET,
+    saveUninitialized: false, //evita q empiece a memorizar algo hasta q nosotros se lo indiquemos en el codigo (o sea no apenas el cliente se conecta con el servidor sino cuando yo se lo indico)
+    resave: false // evita que en los ida y vuelta entre peti y rta, si los datos de la sesion no varian, que no se vuelvan a guardar.
+}))
+
 app.use('/api/sessions', sessionRouter); // Paso 1: la peticion entra a mi app.js y detecta q estoy solicitando una ruta que empieza con '/api/sessions', entonces pasa al router de sessionRouter.js
 // Paso 1: la peticion entra a mi app.js y detecta q estoy solicitando una ruta que empieza con '/api/products', entonces pasa al router de productsRouter.js 
 // escribo la ruta ('/api/products') desde donde quiero usar el router de productos, y a esa ruta se le concatena las rutas que definí en cada endpoint de productsRouter.js ("/", "/:id", etc)
 app.use('/api/products', productsRouter); // por ej quedaria '/api/products/:id' para el endpoint de get por id
-app.use('/api/users', usersRouter
+app.use('/api/users', usersRouter)
 
-)
 //endpoint basico para la home
 // "/" -> path (del home)
 // get -> metodo

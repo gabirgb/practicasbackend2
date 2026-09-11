@@ -8,7 +8,7 @@ export class ProductServices {
     }
 
     getAllProducts = async (queryParams) => {
-        return await this.productsDAOroductsDAO.get(queryParams);
+        return await this.productsDAO.get(queryParams);
     }
 
     getProductById = async (id) => {
