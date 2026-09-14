@@ -1,4 +1,5 @@
-// creo la clase
+import { UsersDTO } from "../dto/UsersDTO.js";
+
 export class ProductsController {
     // Paso 5: creo el constructor (método especial con el que luego se INSTANCIAN los objetos de dicha clase) para poder importar el ProductsDAO.js
     // Es decir, tengo esta clase "ProductsController" que cuando la instancie ("new ProductsController()", lo hago en index.js)debo mandarle si o si los datos persistentes
@@ -8,6 +9,7 @@ export class ProductsController {
     // creo los métodos
     // Paso 3: el controlador recibe la peticion y envía la respuesta, y hace lo que tenga que hacer (en este caso devolver un listado de productos)
     getProducts = async (req, res, next) => {
+        const userAuth = new UsersDTO(req.user);
 
         try {
             // Paso 6: llamo al metodo get del ProductsDAO.js para obtener el listado de productos
@@ -24,6 +26,7 @@ export class ProductsController {
             res.setHeader('Content-type', 'application/json');
             res.status(200).json({
                 status: 'success',
+                usuarioConsulta: userAuth.nombre,
                 payload: products
             });
 
@@ -33,6 +36,7 @@ export class ProductsController {
     }
 
     getProductById = async (req, res, next) => {
+        const userAuth = new UsersDTO(req.user);
         try {
 
             let { id } = req.params;
@@ -49,6 +53,7 @@ export class ProductsController {
             res.setHeader('Content-type', 'application/json');
             res.status(200).json({
                 status: 'success',
+                usuarioConsulta: userAuth.nombre,
                 payload: product
             });
         } catch (error) {
@@ -57,6 +62,7 @@ export class ProductsController {
     }
 
     createProduct = async (req, res, next) => {
+        const userAuth = new UsersDTO(req.user);
         try {
             const newProduct = await this.productsServices.createProduct(req.body);
             res.setHeader('Content-type', 'application/json');
@@ -70,6 +76,7 @@ export class ProductsController {
             if (error.satstusCode) {
                 return res.status(error.statusCode).json({
                     status: 'error',
+                    usuarioConsulta: userAuth.nombre,
                     message: error.message
                 });
             }

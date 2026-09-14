@@ -12,6 +12,8 @@ import sessions from "express-session";
 const PORT = config.PORT;
 const app = express();
 
+//Para mostrar contenido estatico inicio express.static y le asigno la carpeta donde van a estar mis archivos estáticos.
+app.use(express.static("./src/public"));
 //middlewares basicos para parsear la request del servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -33,10 +35,12 @@ app.use('/api/users', usersRouter)
 // "/" -> path (del home)
 // get -> metodo
 // {} -> handler o "controler" de la ruta
-app.get('/', (req, res) => {
-    res.setHeader('Content-type', 'text/html');
-    res.status(200).send('<h1>Bienvenido a mi servidor express</h1>');
-});
+
+// Si uso documentos estaticos no necesito declarar el endpoint para el raiz, porque express.static va directamente a la carptea public a buscar el index.html
+// app.get('/', (req, res) => {
+//     res.setHeader('Content-type', 'text/html');
+//     res.status(200).send('<h1>Bienvenido a mi servidor express</h1>');
+// });
 
 app.get('/test', logger, (req, res) => {
 

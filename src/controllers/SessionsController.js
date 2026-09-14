@@ -22,8 +22,7 @@ export class SessionsController {
             res.setHeader('Content-Type', 'application/json');
             return res.status(200).json({
                 status: 'success',
-                message: new UsersDTO(req.session.user),
-                payload: null
+                user: new UsersDTO(req.session.user)
             });
         } catch (error) {
             next(error);
@@ -69,7 +68,7 @@ export class SessionsController {
             return res.status(200).json({
                 status: 'success',
                 message: `Bienvenido ${user.firstName} ${user.lastName}`,
-                payload: new UsersDTO(user) // Devolver solo los campos necesarios usando DTO  
+                user: new UsersDTO(user) // Devolver solo los campos necesarios usando DTO  
             });
         } catch (error) {
             next(error);
@@ -79,6 +78,7 @@ export class SessionsController {
     // POST /api/sessions/logout
     logout = async (req, res, next) => {
         try {
+            // destroy acepta un callback con un param de error 
             req.session.destroy((error) => {
                 if (error) {
                     res.setHeader('Content-Type', 'application/json');

@@ -45,7 +45,7 @@ export class UsersController {
             res.setHeader('Content-type', 'application/json');
             return res.status(200).json({
                 status: 'success',
-                payload: new UsersDTO(user)
+                user: new UsersDTO(user)
             });
 
         } catch (error) {
@@ -69,7 +69,7 @@ export class UsersController {
             res.setHeader('Content-type', 'application/json');
             return res.status(200).json({
                 status: 'success',
-                payload: new UsersDTO(user)
+                user: new UsersDTO(user)
             });
         } catch (error) {
             next(error);
@@ -83,7 +83,7 @@ export class UsersController {
             return res.status(201).json({
                 status: 'success',
                 message: 'Usuario creado exitosamente',
-                payload: newUser // Devolver solo los campos necesarios usando DTO
+                user: newUser // Devolver solo los campos necesarios usando DTO
             });
 
         } catch (error) {
