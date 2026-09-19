@@ -25,9 +25,12 @@ btnLogin.addEventListener("click", async (e) => {
         },
         body: JSON.stringify({ email, password })
     })
+
+
     if (response.status >= 400) {
-        let { error } = await response.json();
-        divMensajes.textContent = "Error al autenticar " + error;
+        let { message } = await response.json();
+
+        divMensajes.textContent = "Error al autenticar " + message;
         setTimeout(() => {
             divMensajes.textContent = ""
         }, 3000);
@@ -36,3 +39,4 @@ btnLogin.addEventListener("click", async (e) => {
     let data = await response.json();
     divMensajes.textContent = `Login exitoso para ${data.user.nombre}`
 })
+
