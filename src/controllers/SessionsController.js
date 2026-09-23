@@ -1,6 +1,7 @@
 import { UsersDTO } from "../dto/UsersDTO.js";
 import { comparePassword } from "../utils/crypto.js";
-
+import jwt from "jsonwebtoken";
+import { config } from "../config/config.js";
 // creo la clase
 export class SessionsController {
     constructor(usersDAO) {
@@ -8,21 +9,21 @@ export class SessionsController {
         this.usersDAO = usersDAO; //el this se refiere al objeto actual.
     }
 
-    // GET /api/sessions/current (Suele pedirlo el enunciado)
+    // GET /api/sessions/current
     getCurrentSession = async (req, res, next) => {
         try {
-            if (!req.session.user) {
+            // traigo los datos del usuario en req.user
+            if (!req.user) {
                 res.setHeader('Content-Type', 'application/json');
                 return res.status(401).json({
                     status: 'error',
                     message: 'No hay usa sesion activa'
                 });
             }
-
             res.setHeader('Content-Type', 'application/json');
             return res.status(200).json({
                 status: 'success',
-                user: new UsersDTO(req.session.user)
+                user: req.user // El objeto cargado desde el token ya pasó por el DTO al firmarse
             });
         } catch (error) {
             next(error);
@@ -59,16 +60,28 @@ export class SessionsController {
                 });
             }
 
-            //la sesion hay que iniciarla con cada proceso de login que yo implemente, por ej local, Google, gitHub, Facebook, etc.... SIEMPRE Y CUANDO el usuario haya superado las validaciones de inicio de sesion
-            //Esto genera una cookie que es lo que vincula al usuario ante el servidor
-            //esta misma variable es la que voy a controlar al momento de validar la autenticacion en el middleware auth.js
-            req.session.user = user;
+            // JWT
+            // Firmo los datos del usuario y creo el token
+            //hay que quitar la info sensible de user.
+            // recordar que si la info la traigo desde una BD de mongo hay q apanar el objeto con toJason() o lean() porque si no el token da error.
+            // el sign() lleva 3 objetos de param: usuario, PASS DEL QUE FIRMA (o sea yo) y expiredIn
+            // 1. Limpias el usuario dejando solo los datos necesarios con el DTO
+            const userPayload = new UsersDTO(user);
+
+            // 2. Firmas el token
+            const token = jwt.sign(
+
+                { ...userPayload },// Convertimos el DTO a un objeto plano con el operador Spread
+                config.general.JWT_SECRET, // Clave secreta obtenida de process.env.JWT_SECRET
+                { expiresIn: '24h' } // Es recomendable definir un tiempo de expiración
+            );
 
             res.setHeader('Content-Type', 'application/json');
             return res.status(200).json({
                 status: 'success',
                 message: `Bienvenido ${user.firstName} ${user.lastName}`,
-                user: new UsersDTO(user) // Devolver solo los campos necesarios usando DTO  
+                user: userPayload, // Devolver solo los campos necesarios usando DTO  
+                token // aqui le paso el token al FE para q lo guarde mediante localStorage
             });
         } catch (error) {
             next(error);
@@ -76,6 +89,19 @@ export class SessionsController {
     }
 
     // POST /api/sessions/logout
+    // Con JWT el servidor es stateless (sin estado). 
+    // El logout se gestiona principalmente en el cliente eliminando el token guardado.
+    //     Cuando usas JWT y lo envías en el header Authorization: Bearer <token>, el servidor no guarda el token en ningún lado (no hay estado en la base de datos ni en la memoria del servidor).
+
+    // Por lo tanto:
+
+    // El servidor no puede borrar un token que está almacenado en el navegador del cliente (como en localStorage o sessionStorage).
+
+    // El backend solo responde con un mensaje de éxito (200 OK).
+
+    // Es el cliente (Frontend) quien debe eliminar el token de su almacenamiento al recibir esta respuesta:
+
+    // JavaScript
     logout = async (req, res, next) => {
         try {
             // destroy acepta un callback con un param de error 
