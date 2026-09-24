@@ -11,8 +11,9 @@ import { router as usersRouter } from './routes/usersRouter.js'
 //Rutas relativas como "src/public" pueden fallar según desde qué directorio ejecute el comando node en la terminal. La forma estándar y más robusta en Node.js es generar la ruta absoluta utilizando el módulo path:
 import path from 'path';
 import { fileURLToPath } from 'url';
-//import sessions from "express-session";
-// Cuando uso JWT es excluyente con Express-Session
+
+import cookieParser from 'cookie-parser';
+import { verifySameOrigin } from './middlewares/verifySameOrigin.js';
 
 const PORT = config.PORT;
 
@@ -49,6 +50,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 //middlewares basicos para parsear la request del servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+// Aplicar el middleware de protección contra CSRF
+app.use(verifySameOrigin);
+
 
 app.use('/api/sessions', sessionRouter);
 app.use('/api/products', productsRouter);

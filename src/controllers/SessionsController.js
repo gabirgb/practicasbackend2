@@ -76,12 +76,21 @@ export class SessionsController {
                 { expiresIn: '24h' } // Es recomendable definir un tiempo de expiración
             );
 
+            // cookie lleva 3 argumentos: el nombre de la cookie, el token y un objeto donde puedo parametrizar el comportamiwento de la cookie
+            //httpOnly asegura q la cookie solo pueda viajar en las petir pero q no pueda accederse via javascript (es mas seguro) SIEMPRE SE PONE
+            //si configuro un expires, fijarse q sea coherente con el expire de la firma
+            res.cookie("cookietoken", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', // Solo se envía sobre HTTPS
+                sameSite: 'lax' // para protejer contra ataques CSRF
+            })
             res.setHeader('Content-Type', 'application/json');
+
+
             return res.status(200).json({
                 status: 'success',
                 message: `Bienvenido ${user.firstName} ${user.lastName}`,
                 user: userPayload, // Devolver solo los campos necesarios usando DTO  
-                token // aqui le paso el token al FE para q lo guarde mediante localStorage
             });
         } catch (error) {
             next(error);
@@ -104,25 +113,21 @@ export class SessionsController {
     // JavaScript
     logout = async (req, res, next) => {
         try {
-            // destroy acepta un callback con un param de error 
-            req.session.destroy((error) => {
-                if (error) {
-                    res.setHeader('Content-Type', 'application/json');
-                    return res.status(500).json({
-                        status: 'error',
-                        message: `No se pudo cerrar sesión.`
-                    });
-                }
-                //limpia la cookie de sesion por defecto
-                res.clearCookie('connect.sid');
-
-                res.setHeader('Content-Type', 'application/json');
-                return res.status(200).json({
-                    status: 'success',
-                    message: 'Gracias por visitarnos.'
-                });
+            // 1. Limpiamos la cookie donde almacenamos el JWT
+            // Es importante pasarle las mismas opciones de dominio/path si se definieron al crearla
+            // las opciones de seguridad (httpOnly, sameSite, path) deben coincidir con las opciones que usaste al crearla en res.cookie('cookietoken', token, options) durante el login. De lo contrario, algunos navegadores no la eliminarán por discrepancia de atributos.
+            res.clearCookie('cookietoken', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
             });
 
+
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(200).json({
+                status: 'success',
+                message: 'Sesión cerrada correctamente. ¡Gracias por visitarnos!'
+            });
         } catch (error) {
             next(error);
         }
