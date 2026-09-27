@@ -1,6 +1,5 @@
 // import { UsersDTO } from "../dto/UsersDTO.js";
-import jwt from "jsonwebtoken"
-import { config } from "../config/config.js";
+import { verifyToken } from '../utils/jwt.js';
 
 export const auth = (req, res, next) => {
     // Cuando usamos como metodo de envío los Headers, el mecanismo se llama TOKEN DE PORTADOR o "BEARER TOKEN": hay que mandarlo con la palabra reservada "bearer", ej:
@@ -18,6 +17,7 @@ export const auth = (req, res, next) => {
         return res.status(401).json({ error: 'No existen usuarios autenticados' });
     }
 
+    // PARA EXPRESS-SESION CON FS 2 Y 3
     // 2. Separamos el formato "Bearer <token>"
     // si el token viene en el header, lo guardoen una var y elimino la palabra bearer
     // slipt() devuelve un array cortando el string por el elemento seleccioando
@@ -31,12 +31,14 @@ export const auth = (req, res, next) => {
     //     return res.status(401).json({ error: 'Credenciales inválidas.' });
     // }
 
-    // 4. Verificamos el token: confirmo q el token sea válido verificándolo contra mi secret
+    // PARA JTW
+    // 4. Verificamos el token: confirmo q el token sea válido verificándo FIRMA, ESTRUCTURA Y EXPIRACION
     //jwt.verify(token, secret)
     //  Si el token es válido y no ha expirado: No devuelve true, sino que descodifica el token y devuelve el contenido (payload) que guardé cuando lo creé con jwt.sign() en sessionsController
     // Si el token es inválido, expiró o está mal formado: Lanza un error en la ejecución (excepción).
     try {
-        const payload = jwt.verify(token, config.general.JWT_SECRET);
+        // Usas la función de utils
+        const payload = verifyToken(token);
 
         // Como jwt.verify devolvió el objeto con los datos del usuario, esta línea guarda ese objeto en el objeto de la petición (req.user). De esta forma, las siguientes funciones/controladores que ejecuten después de este middleware podrán acceder a req.user para saber qué usuario hizo la solicitud.
         req.user = payload; // Guardamos los datos del usuario firmados en el token para poder usarlos fuera del middleware

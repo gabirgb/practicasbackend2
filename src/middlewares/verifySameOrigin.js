@@ -1,7 +1,15 @@
-//Creo el middleware verifySameOrigin.js para evitar ataques CSRF y para asegurarme de que las peticiones que modifican datos (POST, PUT, DELETE, etc.) provengan exclusivamente de mi propio sitio web.
+//Creo el middleware verifySameOrigin.js para evitar ataques CSRF (Cross rite request forgery) y para asegurarme de que las peticiones que modifican datos (POST, PUT, DELETE, etc.) provengan exclusivamente de mi propio sitio web.
+// Llamadas Servidor a Servidor: Si en el futuro necesitas habilitar webhooks o integraciones de terceros (como MercadoPago o Stripe) recibiendo un POST, esos servicios tampoco enviarán Origin de tu frontend. Para esas rutas específicas deberás omitir este middleware.
+
+
 import { config } from '../config/config.js';
 
 export const verifySameOrigin = (req, res, next) => {
+    // Permitir Postman / herramientas de desarrollo en entorno local
+    if (config.general.NODE_ENV === 'development' && !req.headers.origin && !req.headers.referer) {
+        return next();
+    }
+
     // 1. Las peticiones de lectura (GET, HEAD, OPTIONS) generalmente no cambian estado,
     //    pero en acciones sensibles (POST/PUT/DELETE) se exige la verificación.
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
@@ -13,7 +21,7 @@ export const verifySameOrigin = (req, res, next) => {
     const referer = req.headers.referer;
 
     // Dominio permitido (obtenido de tus variables de entorno o configuración)
-    const allowedOrigin = config.general.CLIENT_URL || 'http://localhost:3500';
+    const allowedOrigin = config.general.CLIENT_URL || 'http://localhost:3000';
 
     // 3. Verificación de Origin
     if (origin) {

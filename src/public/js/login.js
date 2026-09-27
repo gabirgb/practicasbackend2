@@ -43,7 +43,12 @@ btnLogin.addEventListener("click", async (e) => {
 
     //guardo el token en localStorage (o en una cookie, q es mejor porque tiene mas seguridad)
     // localStorage.setItem("token", data.token)
-    divMensajes.textContent = `Login exitoso para ${data.user.nombre}`
+    divMensajes.textContent = `Login exitoso para ${data.user.nombre}`;
+
+    // Opcional: Redireccionar al dashboard/home tras 1.5 segundos
+    setTimeout(() => {
+        window.location.href = "/dashboard.html";
+    }, 1500);
 })
 
 //Pruebas

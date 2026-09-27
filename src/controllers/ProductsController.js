@@ -37,10 +37,11 @@ export class ProductsController {
 
     getProductById = async (req, res, next) => {
         const userAuth = new UsersDTO(req.user);
+
         try {
 
             let { id } = req.params;
-            const product = await this.productServices.getProductsById(id);
+            const product = await this.productServices.getProductById(id);
 
             if (!product) {
                 res.setHeader('Content-Type', 'application/json');

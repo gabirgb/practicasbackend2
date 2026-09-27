@@ -7,4 +7,4 @@ export const router = Router();
 router.get('/', usersController.getUsers)
 router.get('/:id', auth, usersController.getUsersById)
 router.get('/email/:email', auth, usersController.getUsersByEmail)
-router.post('/register', usersController.getUsersById)
+router.post('/register', usersController.createUser)
