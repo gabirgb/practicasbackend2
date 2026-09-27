@@ -78,7 +78,7 @@ app.get(
     '/test',
     // auth, -> remplazo x passport
     passport.authenticate( // recordar q es un middleware, y q si algo falla todo lo q viene despues no se ejecuta (logger, la peti, etc)
-        "jwt", //nombre de la estrategia q defini (no el real, el alias q le asigné yo) y que quiero usar para autenticar
+        "current", //nombre de la estrategia q defini (no el real, el alias q le asigné yo) y que quiero usar para autenticar
         {
             session: false, //me aseguro q el passport no este usando sesiones, que es el sistema q trae por defecto configurado entonces es lo que siempre busca primero
             failureRedirect: "/error", //si hay un error en el try (return done (null, false)) sale por esta ruta que defino arriba asi sencillita x ahora
