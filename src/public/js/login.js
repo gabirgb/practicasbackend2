@@ -46,9 +46,9 @@ btnLogin.addEventListener("click", async (e) => {
     divMensajes.textContent = `Login exitoso para ${data.user.nombre}`;
 
     // Opcional: Redireccionar al dashboard/home tras 1.5 segundos
-    setTimeout(() => {
-        window.location.href = "/dashboard.html";
-    }, 1500);
+    // setTimeout(() => {
+    //     window.location.href = "/dashboard.html";
+    // }, 1500);
 })
 
 //Pruebas

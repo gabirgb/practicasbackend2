@@ -5,4 +5,4 @@ export const router = Router();
 
 router.get('/current', auth, sessionsController.getCurrentSession);
 router.post('/login', sessionsController.login);
-router.post('/logout', sessionsController.logout);
+router.get('/logout', sessionsController.logout);

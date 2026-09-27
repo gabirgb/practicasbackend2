@@ -77,7 +77,7 @@ export class SessionsController {
             // cookie lleva 3 argumentos: el nombre de la cookie, el token y un objeto donde puedo parametrizar el comportamiwento de la cookie
             //httpOnly asegura q la cookie solo pueda viajar en las petir pero q no pueda accederse via javascript (es mas seguro) SIEMPRE SE PONE
             //si configuro un expires, fijarse q sea coherente con el expire de la firma
-            res.cookie("cookietoken", token, {
+            res.cookie("cookietokenpass", token, {
                 httpOnly: true,
                 secure: config.general.NODE_ENV === 'production', // Solo se envía sobre HTTPS
                 sameSite: 'lax', // para protejer contra ataques CSRF
@@ -111,7 +111,7 @@ export class SessionsController {
             // 1. Limpiamos la cookie donde almacenamos el JWT
             // Es importante pasarle las mismas opciones de dominio/path si se definieron al crearla
             // las opciones de seguridad (httpOnly, sameSite, path) deben coincidir con las opciones que usaste al crearla en res.cookie('cookietoken', token, options) durante el login. De lo contrario, algunos navegadores no la eliminarán por discrepancia de atributos.
-            res.clearCookie('cookietoken', {
+            res.clearCookie('cookietokenpass', {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',

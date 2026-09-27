@@ -1,19 +1,24 @@
-import express from 'express';
-// lo importo con alias porque seguro tendré varios routers en mi app
-import { router as productsRouter } from './routes/productsRouter.js';
-import { config } from './config/config.js';
-import { errorHandler } from './middlewares/errorHandler.js';
-import { logger } from './middlewares/log.js';
-import { auth } from './middlewares/auth.js';
-import { connDB } from './config/db.js';
-import { router as sessionRouter } from './routes/sessionRouter.js';
-import { router as usersRouter } from './routes/usersRouter.js'
 //Rutas relativas como "src/public" pueden fallar según desde qué directorio ejecute el comando node en la terminal. La forma estándar y más robusta en Node.js es generar la ruta absoluta utilizando el módulo path:
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import express from 'express';
+import { connDB } from './config/db.js';
+import { config } from './config/config.js';
+
+import { auth } from './middlewares/auth.js';
 import cookieParser from 'cookie-parser';
+import passport from "passport";
+import { inicializarPassport } from './config/passport.config.js';
+
 import { verifySameOrigin } from './middlewares/verifySameOrigin.js';
+import { logger } from './middlewares/log.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+
+// lo importo con alias porque seguro tendré varios routers en mi app
+import { router as usersRouter } from './routes/usersRouter.js'
+import { router as productsRouter } from './routes/productsRouter.js';
+import { router as sessionRouter } from './routes/sessionRouter.js';
 
 const PORT = config.PORT;
 
@@ -50,26 +55,53 @@ app.use(express.static(path.join(__dirname, 'public')));
 //middlewares basicos para parsear la request del servidor
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-// Aplicar el middleware de protección contra CSRF
-app.use(verifySameOrigin);
 
+//PASSPORT
+app.use(passport.initialize());
+// app.use(passport.session()) -> SOLO SI USO SESSIONS
+inicializarPassport();
+
+
+app.use(cookieParser());
+app.use(verifySameOrigin); // protección contra CSRF
 
 app.use('/api/sessions', sessionRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter)
 
-app.get('/test', auth, logger, (req, res) => {
-    if (req.query.error) {
-        throw new Error("Error de pruebas!");
-    }
-
+app.get("/error", (req, res) => {
     res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({
-        payload: "Test ok!!",
-        user: req.user.nombre
-    });
-});
+    return res.status(401).json({ error: `Error al autenticar!!!` }); //mas adelante veremos como hacer q el error sea mas especifico para q por ej en un registro de usuario sepa qué fallo
+})
+
+app.get(
+    '/test',
+    // auth, -> remplazo x passport
+    passport.authenticate( // recordar q es un middleware, y q si algo falla todo lo q viene despues no se ejecuta (logger, la peti, etc)
+        "jwt", //nombre de la estrategia q defini (no el real, el alias q le asigné yo) y que quiero usar para autenticar
+        {
+            session: false, //me aseguro q el passport no este usando sesiones, que es el sistema q trae por defecto configurado entonces es lo que siempre busca primero
+            failureRedirect: "/error", //si hay un error en el try (return done (null, false)) sale por esta ruta que defino arriba asi sencillita x ahora
+        }),
+    logger,
+    (req, res) => {
+
+        // si passport.authenticate sale OK deja un user en req.user con el payload
+
+        // esto no llega a ejecutarse xq si hay error lo captura passport
+        // if (req.query.error) {
+        //     throw new Error("Error de pruebas!");
+        // }
+
+        //esto sí se ejecuta y al tener el mismo formato que el q devuelve passport (req.user) todo sigue funcionando ok
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json({
+            payload: "Test ok!!",
+            user: req.user.nombre
+        });
+    }
+);
+
 
 app.use(errorHandler);
 
