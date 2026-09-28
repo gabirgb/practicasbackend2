@@ -6,7 +6,6 @@ import express from 'express';
 import { connDB } from './config/db.js';
 import { config } from './config/config.js';
 
-import { auth } from './middlewares/auth.js';
 import cookieParser from 'cookie-parser';
 import passport from "passport";
 import { inicializarPassport } from './config/passport.config.js';
