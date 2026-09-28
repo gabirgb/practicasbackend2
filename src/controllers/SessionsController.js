@@ -2,25 +2,18 @@ import { UsersDTO } from "../dto/UsersDTO.js";
 import { generateToken } from '../utils/jwt.js';
 import { config } from "../config/config.js";
 
-//TODO tiene sentido que el constructor sea con usersDAO si ya no lo uso en la clase?
+// NO tiene sentido que la estructura de sessionsController siga siendo una clase porque ya no instancio objetos con su controlador, asi q la cambio a Objeto de funciones:
 
-export class SessionsController {
-    constructor(usersDAO) {
-        //me traigo el usersDAO para poder usarlo en los métodos de la clase 
-        this.usersDAO = usersDAO; //el this se refiere al objeto actual.
-    }
+export const sessionsController = {
+    //no se usa mas
+    // constructor(usersDAO) {
+    //     this.usersDAO = usersDAO;
+    // }
 
     // GET /api/sessions/current
-    getCurrentSession = async (req, res, next) => {
+    // getCurrentSession = async (req, res, next) => {
+    getCurrentSession: async (req, res, next) => {
         try {
-            // traigo los datos del usuario en req.user
-            if (!req.user) {
-                res.setHeader('Content-Type', 'application/json');
-                return res.status(401).json({
-                    status: 'error',
-                    message: 'No hay usa sesion activa'
-                });
-            }
             res.setHeader('Content-Type', 'application/json');
             return res.status(200).json({
                 status: 'success',
@@ -29,18 +22,15 @@ export class SessionsController {
         } catch (error) {
             next(error);
         }
-    }
-
+    }, //agrego la coma porque ahora es una f dentro de un obj
 
     // POST /api/sessions/login
-    login = async (req, res, next) => {
+    login: async (req, res, next) => {
 
         try {
             //  recordar q el user cuando uso passport viene dentro de req.user
             const userDTO = new UsersDTO(req.user);
-
             const userPayload = { ...userDTO };
-
             const token = generateToken(userPayload);
 
             res.cookie("cookietokenpass", token, {
@@ -60,10 +50,10 @@ export class SessionsController {
         } catch (error) {
             next(error);
         }
-    }
+    },
 
     // POST /api/sessions/logout
-    logout = async (req, res, next) => {
+    logout: async (req, res, next) => {
         try {
 
             res.clearCookie('cookietokenpass', {

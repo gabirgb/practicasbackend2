@@ -10,7 +10,6 @@ import { UsersServices } from "../services/usersServices.js";
 
 import { ProductsController } from "./ProductsController.js";
 import { UsersController } from "./usersController.js";
-import { SessionsController } from "./SessionsController.js";
 
 import { ProductsDAO } from "../dao/ProductsDAO.js";
 import { UsersDAO } from "../dao/UsersDAO.js";
@@ -23,5 +22,3 @@ export const productsController = new ProductsController(productServices);
 export const usersDAO = new UsersDAO();
 export const usersService = new UsersServices(usersDAO);
 export const usersController = new UsersController(usersService);
-
-export const sessionsController = new SessionsController(usersDAO);
