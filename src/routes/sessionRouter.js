@@ -1,33 +1,10 @@
 import { Router } from 'express';
 import { sessionsController } from '../controllers/SessionsController.js';
-import passport from 'passport';
+import { passportCall } from '../middlewares/passportCall.js';
 
 export const router = Router();
 
-
-router.get(
-    '/current',
-    passport.authenticate(
-        "current",
-        {
-            session: false,
-            failureRedirect: "/error"
-        }
-    ),
-    sessionsController.getCurrentSession);
-
-
-//router.post('/login', sessionsController.login);
-router.post(
-    '/login',
-    passport.authenticate(
-        "login",
-        {
-            session: false,
-            failureRedirect: "/error"
-        }
-    ),
-    sessionsController.login);
-
-
+// uso el middleware de passportCall que creé para checkear si hay errores como cambios en el toke, cierre de sesiones, etc...
+router.get('/current', passportCall('current'), sessionsController.login);
+router.post('/login', passportCall('login'), sessionsController.login);
 router.get('/logout', sessionsController.logout);

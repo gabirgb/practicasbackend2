@@ -1,5 +1,6 @@
 import { sanitizeInput } from "../utils/sanitizer.js";
 import { VALID_PRODUCT_STATUSES } from "../constants/productsConstants.js";
+import { BadRequestError, NotFoundError } from "../utils/CustomError.js";
 
 // creo la clase
 export class ProductServices {
@@ -8,11 +9,19 @@ export class ProductServices {
     }
 
     getAllProducts = async (queryParams) => {
-        return await this.productsDAO.get(queryParams);
+        const products = await this.productsDAO.getAll(queryParams);
+        if (!products || products.length === 0) {
+            throw new NotFoundError('No hay resultados que coincidan con sus criterios de busqueda.');
+        }
+        return products;
     }
 
     getProductById = async (id) => {
-        return await this.productsDAO.getById(id);
+        const product = await this.productsDAO.getById(id);
+        if (!product || product.length === 0) {
+            throw new NotFoundError('No se encontró el evento con id ${id}');
+        }
+        return product;
     }
 
     createProduct = async (rawEventData) => {
@@ -30,25 +39,17 @@ export class ProductServices {
 
         //2. valido campos obligatorios
         if (!code || !title || !description || !category || !price || !stock) {
-            const error = new Error('Faltan campos obligatorios (code/ title/ description/ category/ category/ price/ stock)');
-            error.statusCode = 400;
-            throw error;
+            throw new BadRequestError('Faltan datos obligatorios', validationErrors);
         }
 
         //3. Valido tipo de datos y errores logicos
         if (typeof price !== 'number' || typeof stock !== 'number' || stock < 0) {
-            const error = new Error('Valores inválidos: El precio y el stock deben ser números. El stock no pueden ser negativo');
-            error.statusCode = 400;
-            throw error;
+            throw new BadRequestError('El precio y el stock deben ser números. El stock no pueden ser negativo', validationErrors);
         }
 
         if (status && !VALID_PRODUCT_STATUSES.includes(status.toLowerCase())) {
-            const error = new Error(`El estado ${status} no es válido. Opciones permitidas: ${VALID_PRODUCT_STATUSES.join(', ')}`);
-            error.statusCode = 400;
-            throw error;
+            throw new BadRequestError(`El estado ${status} no es válido. Opciones permitidas: ${VALID_PRODUCT_STATUSES.join(', ')}`, validationErrors);
         }
-
-
 
         // 5. Crear el evento enviando solo los campos desestructurados y limpios: Al construir EventData explícitamente, evito que el cliente inyecte propiedades no deseadas que vengan en el req.body.
         //Además, creo el date solamente si el usuario asignó fecha al evento

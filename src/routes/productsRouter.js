@@ -5,7 +5,6 @@ import { productsController } from "../controllers/index.js";
 //inicializo el router Y LO EXPORTO para poder usarlo en app.js
 export const router = Router();
 
-router.use(auth);
 // Paso 2: nota que es un get y entonces lo deriva al controler 
 //empiezo a generar las rutas
 router.get('/', productsController.getProducts); // aca le paso el metodo de la clase que cree en productsController.js

@@ -68,10 +68,11 @@ app.use('/api/sessions', sessionRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/users', usersRouter)
 
-app.get("/error", (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(401).json({ error: `Error al autenticar!!!` }); //mas adelante veremos como hacer q el error sea mas especifico para q por ej en un registro de usuario sepa qué fallo
-})
+// Se supone q lo saque de todos lados y se puede eliminar el endpoint "get /error"
+// app.get("/error", (req, res) => {
+//     res.setHeader('Content-Type', 'application/json');
+//     return res.status(401).json({ error: `Error al autenticar!!!` }); //mas adelante veremos como hacer q el error sea mas especifico para q por ej en un registro de usuario sepa qué fallo
+// })
 
 app.get(
     '/test',

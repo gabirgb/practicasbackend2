@@ -8,15 +8,6 @@ export class UsersController {
     getUsers = async (req, res, next) => {
         try {
             const users = await this.usersServices.getAllUsers(req.query);
-
-            if (!users || users.length === 0) {
-                res.setHeader('Content-type', 'application/json');
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'No hay usuarios que coincidan con los criterios de busqueda'
-                })
-            }
-
             const usersDTO = users.map(user => new UsersDTO(user));
 
             res.setHeader('Content-Type', 'application/json');
@@ -34,14 +25,6 @@ export class UsersController {
             const { id } = req.params;
             const user = await this.usersServices.getUsersById(id);
 
-            if (!user) {
-                res.setHeader('Content-type', 'application/json');
-                return res.status(404).json({
-                    status: 'error',
-                    message: `No se encontró al usuario con id ${id}`
-                });
-            }
-
             res.setHeader('Content-type', 'application/json');
             return res.status(200).json({
                 status: 'success',
@@ -57,14 +40,6 @@ export class UsersController {
         try {
             const { email } = req.params;
             const user = await this.usersServices.getUsersByEmail(email);
-
-            if (!user) {
-                res.setHeader('Content-type', 'application/json');
-                return res.status(404).json({
-                    status: 'error',
-                    message: `No se encontró al usuario con email ${email}`
-                });
-            }
 
             res.setHeader('Content-type', 'application/json');
             return res.status(200).json({
@@ -100,14 +75,7 @@ export class UsersController {
             });
 
         } catch (error) {
-            // Si el servicio lanzó un error de validacion (statusCode 400)
-            if (error.statusCode) {
-                return res.status(error.statusCode).json({
-                    status: 'error',
-                    message: error.message
-                });
-            }
-            // Si no, paso directamente al middleware errorHandler
+            // Cualquier error (de validación, duplicados o de Passport) el error handler lo manda directo a "next(error);"
             next(error);
 
         }

@@ -15,14 +15,6 @@ export class ProductsController {
             // Paso 6: llamo al metodo get del ProductsDAO.js para obtener el listado de productos
             let products = await this.productServices.getAllProducts();
 
-            if (!products || products.length === 0) {
-                res.setHeader('Content-Type', 'application/json');
-                return res.status(404).json({
-                    status: `error`,
-                    message: 'No hay resultados que coincidan con sus criterios de busqueda.'
-                });
-            }
-
             res.setHeader('Content-type', 'application/json');
             res.status(200).json({
                 status: 'success',
@@ -39,17 +31,8 @@ export class ProductsController {
         const userAuth = new UsersDTO(req.user);
 
         try {
-
             let { id } = req.params;
             const product = await this.productServices.getProductById(id);
-
-            if (!product) {
-                res.setHeader('Content-Type', 'application/json');
-                return res.status(404).json({
-                    status: 'error',
-                    message: `No se encontró el evento con id ${id}`
-                });
-            }
 
             res.setHeader('Content-type', 'application/json');
             res.status(200).json({
@@ -73,15 +56,7 @@ export class ProductsController {
             });
 
         } catch (error) {
-            // Si el servicio lanzó un error de validacion (statusCode 400)
-            if (error.satstusCode) {
-                return res.status(error.statusCode).json({
-                    status: 'error',
-                    usuarioConsulta: userAuth.nombre,
-                    message: error.message
-                });
-            }
-            // Si no, paso directamente al middleware errorHandler
+            // Cualquier error (de validación, duplicados o de Passport) el error handler lo manda directo a "next(error);"
             next(error);
 
         }
