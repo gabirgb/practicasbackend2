@@ -2,7 +2,7 @@ import { usersModel } from "../models/usersModel.js";
 
 // el DAO es un patron de diseño que nos dice que todas las conexiones a persistencia sean realizadas desde un mismo objeto (para que no haya conexiones por todos lados sueltas).
 export class UsersDAO {
-    async get(queryOptions = {}) {
+    async getAll(queryOptions = {}) {
         const { firstName, lastName, email, role, isActive } = queryOptions;
         const mongoQuery = {};
 

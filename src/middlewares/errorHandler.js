@@ -6,7 +6,10 @@ export const errorHandler = (err, req, res, next) => {
     const message = err.message || 'Error interno del servidor';
     const errorType = err.errorType || err.name || 'InternalServerError';
 
-    if (config.general.NODE_ENV === 'development') {
+    // Normalizamos la variable eliminando espacios invisibles
+    const currentEnv = config.general.NODE_ENV?.trim().toLowerCase();
+
+    if (currentEnv !== 'production') {
         console.error("DEBUG ERROR HANDLER ->", err);
 
         return res.status(statusCode).json({

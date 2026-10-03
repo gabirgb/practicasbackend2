@@ -28,10 +28,10 @@ export class ProductsController {
     }
 
     getProductById = async (req, res, next) => {
-        const userAuth = new UsersDTO(req.user);
 
         try {
-            let { id } = req.params;
+            const userAuth = new UsersDTO(req.user);
+            const { id } = req.params;
             const product = await this.productServices.getProductById(id);
 
             res.setHeader('Content-type', 'application/json');
@@ -47,11 +47,13 @@ export class ProductsController {
 
     createProduct = async (req, res, next) => {
         const userAuth = new UsersDTO(req.user);
+
         try {
-            const newProduct = await this.productsServices.createProduct(req.body);
+            const newProduct = await this.productServices.createProduct(req.body);
             res.setHeader('Content-type', 'application/json');
             return res.status(201).json({
                 status: 'success',
+                usuarioConsulta: userAuth.nombre,
                 payload: newProduct
             });
 

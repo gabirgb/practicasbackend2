@@ -53,6 +53,6 @@ export const verifySameOrigin = (req, res, next) => {
     res.setHeader('Content-Type', 'application/json');
     return res.status(403).json({
         status: 'error',
-        message: 'Acceso rechazado: Encabezados de origen no presentes'
+        message: 'Por favor inicie sesión.'
     });
 };

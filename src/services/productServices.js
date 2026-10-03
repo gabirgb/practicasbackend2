@@ -39,16 +39,16 @@ export class ProductServices {
 
         //2. valido campos obligatorios
         if (!code || !title || !description || !category || !price || !stock) {
-            throw new BadRequestError('Faltan datos obligatorios', validationErrors);
+            throw new BadRequestError('Faltan datos obligatorios');
         }
 
         //3. Valido tipo de datos y errores logicos
         if (typeof price !== 'number' || typeof stock !== 'number' || stock < 0) {
-            throw new BadRequestError('El precio y el stock deben ser números. El stock no pueden ser negativo', validationErrors);
+            throw new BadRequestError('El precio y el stock deben ser números. El stock no pueden ser negativo');
         }
 
         if (status && !VALID_PRODUCT_STATUSES.includes(status.toLowerCase())) {
-            throw new BadRequestError(`El estado ${status} no es válido. Opciones permitidas: ${VALID_PRODUCT_STATUSES.join(', ')}`, validationErrors);
+            throw new BadRequestError(`El estado ${status} no es válido. Opciones permitidas: ${VALID_PRODUCT_STATUSES.join(', ')}`);
         }
 
         // 5. Crear el evento enviando solo los campos desestructurados y limpios: Al construir EventData explícitamente, evito que el cliente inyecte propiedades no deseadas que vengan en el req.body.

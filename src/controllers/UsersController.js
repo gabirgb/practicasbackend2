@@ -7,7 +7,10 @@ export class UsersController {
 
     getUsers = async (req, res, next) => {
         try {
+            // Pedimos los usuarios al DAO pasándole los query params de la URL
             const users = await this.usersServices.getAllUsers(req.query);
+
+            //si hay usuarios mapeamos cada objeto de usuario a su DTO correspondiente y devuelvo la rta exitosa
             const usersDTO = users.map(user => new UsersDTO(user));
 
             res.setHeader('Content-Type', 'application/json');

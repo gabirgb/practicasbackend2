@@ -2,13 +2,19 @@
 import passport from 'passport';
 import { UnauthorizedError } from '../utils/CustomError.js';
 
-export const passportCall = (strategy) => {
+export const passportCall = (strategy, options = {}) => {
+    // recordar: si el authenticate sale ok passport guarda el return en el req.user
+    // Definimos las opciones por defecto y combinamos con las que reciba la función
+    const defaultOptions = {
+        session: false,
+        failureMessage: 'No autorizado',
+        ...options
+    };
+
     return (req, res, next) => {
-        // recordar: si el authenticate sale ok passport guarda el return en el req.user
-        passport.authenticate(strategy,
-            {
-                session: false
-            },
+        console.log('1. Ingreso al middleware PassportCall:'); //
+
+        passport.authenticate(strategy, defaultOptions,
             /*
             (err, user, info) => { ... }: Es la función personalizada que intercepta los 3 argumentos que devuelve el done() de la estrategia:   - err: Si ocurrió una falla inesperada en el código o base de datos (done(error)).
             - user: El objeto de usuario si la autenticación fue exitosa (done(null, user)).
@@ -20,7 +26,14 @@ export const passportCall = (strategy) => {
 
                 // 2. Si no hay usuario (credenciales inválidas o token ausente/inválido)
                 if (!user) {
-                    const message = info?.message || info?.toString() || 'No autorizado';
+                    // Si configuramos un path de redirección al llamar al middleware:
+                    if (defaultOptions.failureRedirect) {
+                        // Opcional: puedes adjuntar una query string para informar al frontend del motivo
+                        return res.redirect(`${defaultOptions.failureRedirect}?error=access_denied`);
+                    }
+
+                    // Si no hay redirección configurada, mantenemos el comportamiento por defecto (401 Error)
+                    const message = info?.message || info?.toString() || defaultOptions.failureMessage;
                     return next(new UnauthorizedError(message));
                 }
 

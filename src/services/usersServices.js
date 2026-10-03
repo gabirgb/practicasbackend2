@@ -33,11 +33,13 @@ export class UsersServices {
     }
 
     getUsersByEmail = async (email) => {
-        let user = await this.usersDAO.getByEmail(email);
+        const user = await this.usersDAO.getByEmail(email);
 
         if (!user) {
             throw new NotFoundError(`No se encontró al usuario con email ${email}`);
         }
+
+        return user;
     }
 
     createUser = async (rawUserData) => {

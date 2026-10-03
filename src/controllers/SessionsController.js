@@ -14,9 +14,11 @@ export const sessionsController = {
     // getCurrentSession = async (req, res, next) => {
     getCurrentSession: async (req, res, next) => {
         try {
+            //  recordar q el user cuando uso passport viene dentro de req.user
             res.setHeader('Content-Type', 'application/json');
             return res.status(200).json({
                 status: 'success',
+                message: `Usuario actual: ${req.user.firstName} ${req.user.lastName}`,
                 user: req.user // El objeto cargado desde el token ya pasó por el DTO al firmarse
             });
         } catch (error) {
@@ -47,6 +49,47 @@ export const sessionsController = {
                 message: `Bienvenido ${req.user.firstName} ${req.user.lastName}`,
                 user: userPayload, // Devolver solo los campos necesarios usando DTO  
             });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // POST /api/sessions/githubcallback
+    loginGithub: async (req, res, next) => {
+
+        try {
+            console.log('Usuario recibido de Passport:', req.user);
+
+            const userData = {
+                ...req.user,
+                firstName: req.user.firstName || req.user.name || req.user.username || 'Usuario',
+                lastName: req.user.lastName || ''
+            };
+
+
+            const userDTO = new UsersDTO(userData);
+            const userPayload = { ...userDTO };
+            const token = generateToken(userPayload);
+
+            res.cookie("cookietokenpass", token, {
+                httpOnly: true,
+                secure: config.general.NODE_ENV === 'production', // Solo se envía sobre HTTPS
+                sameSite: 'lax', // para protejer contra ataques CSRF
+                maxAge: 24 * 60 * 60 * 1000, // 86,400,000 ms (24 horas)
+                path: '/'
+            })
+
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(200).json({
+                status: 'success',
+                message: `Bienvenido ${req.user.firstName} ${req.user.lastName}`,
+                user: userPayload, // Devolver solo los campos necesarios usando DTO  
+            });
+
+            // REDIRECCIÓN en lugar de res.json:
+            // Redirige al frontend (ej: React, Vue, o tu vista de Handlebars)
+            //return res.redirect('http://localhost:3000/profile');
+
         } catch (error) {
             next(error);
         }

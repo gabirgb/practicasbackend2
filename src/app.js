@@ -10,8 +10,6 @@ import cookieParser from 'cookie-parser';
 import passport from "passport";
 import { inicializarPassport } from './config/passport.config.js';
 
-import { verifySameOrigin } from './middlewares/verifySameOrigin.js';
-import { logger } from './middlewares/log.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 // lo importo con alias porque seguro tendré varios routers en mi app
@@ -62,7 +60,6 @@ inicializarPassport();
 
 
 app.use(cookieParser());
-app.use(verifySameOrigin); // protección contra CSRF
 
 app.use('/api/sessions', sessionRouter);
 app.use('/api/products', productsRouter);
@@ -83,7 +80,6 @@ app.get(
             session: false, //me aseguro q el passport no este usando sesiones, que es el sistema q trae por defecto configurado entonces es lo que siempre busca primero
             failureRedirect: "/error", //si hay un error en el try (return done (null, false)) sale por esta ruta que defino arriba asi sencillita x ahora
         }),
-    logger,
     (req, res) => {
 
         // si passport.authenticate sale OK deja un user en req.user con el payload
